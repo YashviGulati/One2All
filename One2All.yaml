@@ -1,0 +1,217 @@
+swagger: "2.0"
+info:
+  description: "One2All is an application made using Amazon SNS resource, that coordinates and manages the delivery of messages to subscribing endpoints."
+  version: "1.0.0"
+  title: "One2All"
+
+  contact:
+    email: "yashvi.gulati@aexp.com"
+
+host: "localhost:1010"
+basePath: "/"
+tags:
+- name: "homepage"
+  description: "welcome to homepage"
+  
+- name: "topics"
+  description: "contains details about all the topics generated"
+  
+- name: "subscriptions"
+  description: "manages all the subscribers"
+  
+- name: "message"
+  description: "this is the message to be published"
+  
+schemes:
+- "http"
+paths:
+  /:
+    get:
+      tags:
+      - "homepage"
+      summary: "displays the homepage"
+      description: ""
+      operationId: "Home"
+      
+      responses:
+        200:
+          description: "successful operation"
+
+        404:
+          description: "page not found"
+  
+  /topics:
+    get:
+      tags:
+      - "topics"
+      summary: "displays all the existing topics"
+      description: ""
+      operationId: "GetTopics"
+
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Topics'
+
+        404:
+          description: "page not found"
+          
+  /topics/{topicname}:
+    post:
+      tags:
+      - "topics"
+      summary: "creates a new topic"
+
+      operationId: "CreateTopic"
+
+      parameters:
+      - name: "topicname"
+        in: "query"
+        description: "The name of the topic is always stored as string"
+        required: true
+        type: "string"
+
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Topics'
+          
+    delete:
+      tags:
+      - "topics"
+      summary: "deletes a topic"
+      description: ""
+      operationId: "DeleteTopicByName"
+
+      parameters:
+  
+      - name: "topicname"
+        in: "query"
+        description: "topic to delete"
+        required: true
+        type: "string"
+      responses:
+        400:
+          description: "Invalid topic name"
+        404:
+          description: "Topic not found"
+  
+    get:
+      tags:
+      - "subscriptions"
+      summary: "Find subscribers subscribing to the topic"
+      description: "Returns lists all the subscribers subscribing to the topic"
+      operationId: "GetSubByTopic"
+
+      parameters:
+      - name: "topicname"
+        in: "query"
+        description: "list of subscribers to be returned"
+        required: true
+        type: "string"
+
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Subscriptions'
+
+        404:
+          description: "topic not found"
+  
+  /topics/{topicname}/{subname}:
+    post:
+      tags:
+      - "subscriptions"
+      summary: "creates a subscription"
+      description: "an endpoint is added to the topic "
+      operationId: "CreateSub"
+
+      parameters:
+      - name: "topicname"
+        in: "query"
+        description: "Topic name which has to be subscribed"
+        required: true
+        type: "string"
+        
+      - name: "subname"
+        in: "query"
+        description: "Email id of the subscriber"
+        required: true
+        type: "string"
+        
+      responses:
+        200:
+          description: "successful operation"
+
+  /{topicname}/{message}:
+    post:
+      tags:
+      - "message"
+      summary: "Publish message to a topic"
+      description: ""
+      operationId: "SendMsg"
+     
+      parameters:
+      - name: "topicname"
+        in: "query"
+        description: "Topic name which has to be subscribed"
+        required: true
+        type: "string"
+        
+      - name: "message"
+        in: "query"
+        description: "message to be sent"
+        required: true
+        type: "string"
+        
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Message'
+
+        400:
+          description: "Invalid Order"
+ 
+definitions:
+  Topics:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      
+  Subscriptions:
+    type: "object"
+    properties:
+      Endpoint::
+        type: "string"
+        
+      Owner:
+        type: "integer"
+        
+      Protocol:
+        type: "string"
+        
+      SubscriptionArn:
+        type: "string"
+      
+      TopicArn:
+        type: "string"
+
+  Message:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+
